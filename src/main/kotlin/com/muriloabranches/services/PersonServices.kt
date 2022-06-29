@@ -1,5 +1,6 @@
 package com.muriloabranches.services
 
+import com.muriloabranches.exception.RequiredObjectIsNullException
 import com.muriloabranches.exception.ResourceNotFoundException
 import com.muriloabranches.model.Person
 import com.muriloabranches.repository.PersonRepository
@@ -12,7 +13,11 @@ class PersonServices {
     @Autowired
     private lateinit var repository: PersonRepository
 
-    fun create(person: Person): Person = repository.save(person)
+    fun create(person: Person?): Person {
+        if(person == null) throw RequiredObjectIsNullException()
+
+        return repository.save(person)
+    }
 
     fun findAll(): List<Person> = repository.findAll()
 
@@ -21,7 +26,9 @@ class PersonServices {
             .orElseThrow { ResourceNotFoundException("No records found for this ID") }
 
 
-    fun update(person: Person): Person {
+    fun update(person: Person?): Person {
+        if(person == null) throw RequiredObjectIsNullException()
+
         val entity: Person = repository.findById(person.id!!)
             .orElseThrow { ResourceNotFoundException("No records found for this ID") }
 
